@@ -1,0 +1,1 @@
+export const LARGE_TRADE_THRESHOLD = 25_000;
