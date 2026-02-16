@@ -8,11 +8,10 @@ const parseKrakenCandles = (candles: any[]): TPriceBar[] => {
   const priceBars: TPriceBar[] = [];
 
   candles.forEach((candle: any) => {
-    // Kraken: [time, open, high, low, close, vwap, volume, count]
     const [timestamp, open, high, low, close, _, volume] = candle;
 
     priceBars.push({
-      date: timestamp, // Kraken timestamp is already in seconds
+      date: timestamp,
       open: parseFloat(open),
       high: parseFloat(high),
       low: parseFloat(low),
@@ -29,12 +28,11 @@ const parseKrakenCandles = (candles: any[]): TPriceBar[] => {
  * Endpoint: https://api.kraken.com/0/public/OHLC
  */
 const getCandles = async (
-  symbol: string, // e.g., "XBTUSD" or "XXBTZUSD"
-  interval: string, // Kraken uses minutes (1, 5, 15, 30, 60, 240, 1440, 10080, 21600)
+  symbol: string,
+  interval: string,
   startTime?: Date,
   endTime?: Date,
 ): Promise<TPriceBar[]> => {
-  // Map standard intervals to Kraken intervals (minutes)
   const intervalMap: Record<string, number> = {
     "1m": 1,
     "5m": 5,
@@ -43,13 +41,10 @@ const getCandles = async (
   };
   const krakenInterval = intervalMap[interval] || 60;
 
-  // Kraken symbol mapping (e.g. BTCUSDT -> XBTUSD or similar, for demo we use XBTUSD)
-  // Note: Kraken symbols can be tricky. "XBTUSD" is a common alias for Bitcoin/USD.
   const krakenSymbol = symbol === "BTCUSDT" ? "XBTUSD" : symbol;
 
   let url = `https://api.kraken.com/0/public/OHLC?pair=${krakenSymbol}&interval=${krakenInterval}`;
   if (startTime) {
-    // Kraken 'since' is a timestamp in seconds
     url += `&since=${Math.floor(startTime.getTime() / 1000)}`;
   }
 
@@ -63,7 +58,6 @@ const getCandles = async (
       return [];
     }
 
-    // Kraken returns data.result[pairName]
     const pairName = Object.keys(data.result).find((key) => key !== "last");
     if (pairName) {
       return parseKrakenCandles(data.result[pairName]);
