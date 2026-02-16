@@ -20,10 +20,10 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5242880,
       },
       manifest: {
-        name: "SciChart Demo PWA",
-        short_name: "SciChartPWA",
-        description: "SciChart Demo App with PWA capabilities",
-        theme_color: "#ffffff",
+        name: "SciChart Demo",
+        short_name: "SciChartDemo",
+        description: "SciChart Demo App",
+        theme_color: "#131722",
         icons: [
           {
             src: "Logo.png",
