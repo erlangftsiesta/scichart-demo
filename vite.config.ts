@@ -1,9 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-
 import { VitePWA } from "vite-plugin-pwa";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
@@ -19,6 +17,7 @@ export default defineConfig({
       workbox: {
         sourcemap: true,
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+        maximumFileSizeToCacheInBytes: 5242880,
       },
       manifest: {
         name: "SciChart Demo PWA",
@@ -38,12 +37,23 @@ export default defineConfig({
           },
         ],
       },
-
       devOptions: {
         enabled: true,
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          scichart: ["scichart", "scichart-react"],
+          mui: ["@mui/material", "@mui/icons-material", "@emotion/react", "@emotion/styled"],
+          vendor: ["react", "react-dom", "rxjs"],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1500,
+  },
   server: {
     open: true,
     allowedHosts: true,
