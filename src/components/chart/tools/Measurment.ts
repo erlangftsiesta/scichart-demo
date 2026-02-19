@@ -43,11 +43,13 @@ export class SelectionModifier extends ChartModifierBase2D {
   public modifierMouseDown(args: ModifierMouseArgs): void {
     super.modifierMouseDown(args);
 
-    if (this.isEnabled) {
+    if (this.isEnabled && args.mousePoint) {
       this.startPoint = args.mousePoint;
       this.clearSelection();
 
       const themeColor = appTheme.VividSkyBlue;
+      const sx = this.startPoint.x;
+      const sy = this.startPoint.y;
 
       this.activeBox = new BoxAnnotation({
         xCoordinateMode: ECoordinateMode.Pixel,
@@ -55,10 +57,10 @@ export class SelectionModifier extends ChartModifierBase2D {
         fill: themeColor + "33",
         stroke: themeColor,
         strokeThickness: 1,
-        x1: this.startPoint.x,
-        y1: this.startPoint.y,
-        x2: this.startPoint.x,
-        y2: this.startPoint.y,
+        x1: sx,
+        y1: sy,
+        x2: sx,
+        y2: sy,
         annotationLayer: EAnnotationLayer.AboveChart,
       });
 
@@ -78,20 +80,27 @@ export class SelectionModifier extends ChartModifierBase2D {
         annotationLayer: EAnnotationLayer.AboveChart,
       });
 
+      // Set posisi awal arrow agar tidak muncul di (0,0)
       this.hArrow = new CustomAnnotation({
         xCoordinateMode: ECoordinateMode.Pixel,
         yCoordinateMode: ECoordinateMode.Pixel,
+        x1: sx,
+        y1: sy,
         verticalAnchorPoint: EVerticalAnchorPoint.Center,
         horizontalAnchorPoint: EHorizontalAnchorPoint.Center,
         annotationLayer: EAnnotationLayer.AboveChart,
+        svgString: this.getArrowSVG(themeColor, 0),
       });
 
       this.vArrow = new CustomAnnotation({
         xCoordinateMode: ECoordinateMode.Pixel,
         yCoordinateMode: ECoordinateMode.Pixel,
+        x1: sx,
+        y1: sy,
         verticalAnchorPoint: EVerticalAnchorPoint.Center,
         horizontalAnchorPoint: EHorizontalAnchorPoint.Center,
         annotationLayer: EAnnotationLayer.AboveChart,
+        svgString: this.getArrowSVG(themeColor, 90),
       });
 
       const xCalc = this.parentSurface.xAxes
@@ -101,13 +110,13 @@ export class SelectionModifier extends ChartModifierBase2D {
         .get(0)
         .getCurrentCoordinateCalculator();
 
-      const xVal = xCalc.getDataValue(this.startPoint.x);
-      const yVal = yCalc.getDataValue(this.startPoint.y);
+      const xVal = xCalc.getDataValue(sx);
+      const yVal = yCalc.getDataValue(sy);
 
-      this.x1Marker = createAxisMarker(xVal, formatDate);
-      this.x2Marker = createAxisMarker(xVal, formatDate);
-      this.y1Marker = createAxisMarker(yVal, formatPrice);
-      this.y2Marker = createAxisMarker(yVal, formatPrice);
+      this.x1Marker = createAxisMarker(xVal, formatDate, true);
+      this.x2Marker = createAxisMarker(xVal, formatDate, true);
+      this.y1Marker = createAxisMarker(yVal, formatPrice, false);
+      this.y2Marker = createAxisMarker(yVal, formatPrice, false);
 
       this.parentSurface.annotations.add(this.activeBox);
       this.parentSurface.annotations.add(this.hLine);
@@ -163,16 +172,20 @@ export class SelectionModifier extends ChartModifierBase2D {
       this.vLine.y2 = maxY;
 
       const themeColor = appTheme.VividSkyBlue;
+      const arrowSize = -10;
+      const halfArrow = arrowSize / 2;
 
-      this.hArrow.x1 = isRight ? maxX : minX;
+      this.hArrow.x1 = isRight ? maxX + halfArrow : minX - halfArrow;
       this.hArrow.y1 = midY;
+
       const hRot = isRight ? 0 : 180;
-      this.hArrow.svgString = `<svg width="10" height="10" overflow="visible"><polygon points="0,0 10,5 0,10" fill="${themeColor}" transform="rotate(${hRot} 5 5)"/></svg>`;
+      this.hArrow.svgString = this.getArrowSVG(themeColor, hRot);
 
       this.vArrow.x1 = midX;
-      this.vArrow.y1 = isDown ? maxY : minY;
+      this.vArrow.y1 = isDown ? maxY + halfArrow : minY - halfArrow;
+
       const vRot = isDown ? 90 : 270;
-      this.vArrow.svgString = `<svg width="10" height="10" overflow="visible"><polygon points="0,0 10,5 0,10" fill="${themeColor}" transform="rotate(${vRot} 5 5)"/></svg>`;
+      this.vArrow.svgString = this.getArrowSVG(themeColor, vRot);
 
       const xCalc = this.parentSurface.xAxes
         .get(0)
@@ -402,5 +415,12 @@ export class SelectionModifier extends ChartModifierBase2D {
       this.statsTooltip.horizontalAnchorPoint = hAnchor;
       this.statsTooltip.svgString = getMeasurementTooltip(stats);
     }
+  }
+
+  private getArrowSVG(color: string, rotation: number): string {
+    return `<svg width="10" height="10" overflow="visible" viewBox="0 0 10 10">
+    <polygon points="0,0 10,5 0,10" fill="${color}" 
+      transform="rotate(${rotation} 5 5)"/>
+  </svg>`;
   }
 }

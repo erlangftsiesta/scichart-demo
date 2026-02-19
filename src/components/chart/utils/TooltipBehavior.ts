@@ -10,7 +10,7 @@ import {
 } from "scichart";
 import { appTheme } from "../../../styles/theme";
 import { calculateStats } from "./ChartStats";
-import { getStatsTooltipSvg } from "../templates/DetailTooltip";
+import { getStatsTooltip } from "../templates/DetailTooltip";
 
 export const attachStatsTooltip = (
   sciChartSurface: SciChartSurface,
@@ -42,7 +42,7 @@ export const attachStatsTooltip = (
       yCoordinateMode: ECoordinateMode.DataValue,
       x1: Math.max(x1, x2),
       y1: Math.max(y1, y2),
-      svgString: getStatsTooltipSvg(currentStats, isMinimized, tooltipId),
+      svgString: getStatsTooltip(currentStats, isMinimized, tooltipId),
       annotationLayer: EAnnotationLayer.AboveChart,
     });
     sciChartSurface.annotations.add(tooltipAnnotation);
@@ -119,7 +119,7 @@ export const attachStatsTooltip = (
           const minX = Math.min(cX1, cX2);
           currentStats = calculateStats(dataSeries, minX, maxX);
           if (currentStats) {
-            tooltipAnnotation.svgString = getStatsTooltipSvg(
+            tooltipAnnotation.svgString = getStatsTooltip(
               currentStats,
               isMinimized,
               tooltipId,
@@ -147,7 +147,7 @@ export const attachStatsTooltip = (
     ) {
       isMinimized = !isMinimized;
       if (currentStats && tooltipAnnotation) {
-        tooltipAnnotation.svgString = getStatsTooltipSvg(
+        tooltipAnnotation.svgString = getStatsTooltip(
           currentStats,
           isMinimized,
           tooltipId,
