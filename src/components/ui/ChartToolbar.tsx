@@ -34,7 +34,6 @@ export const ChartToolbar: React.FC<ChartToolbarProps> = ({
   onDeleteSelected,
 }) => {
   const theme = useTheme();
-  // Use MUI breakpoint to detect mobile (sm or down)
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleFormat = (
@@ -67,6 +66,7 @@ export const ChartToolbar: React.FC<ChartToolbarProps> = ({
         borderRadius: isMobile ? 0 : 1,
         padding: isMobile ? "10px 0" : "10px 5px",
         gap: isMobile ? 0 : 1,
+        boxShadow: "none",
       }}
     >
       <ToggleButtonGroup

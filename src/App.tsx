@@ -1,15 +1,16 @@
-import * as React from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import commonClasses from "./styles/Examples.module.scss";
 import { SciChartReact, TResolvedReturnType } from "scichart-react";
 import { appTheme } from "./styles/theme";
 import { ChartToolbar } from "./components/ui/ChartToolbar";
+import { TimeFrameSelector } from "./components/ui/TimeFrameSelector";
 import { CHART_PROVIDERS } from "./services/ChartProviders";
 import { createChartInitializer } from "./components/chart/core/ChartInitializer";
 import { TPriceBar } from "./types/types";
 
 export default function RealtimeTickingStockCharts() {
-  const chartControlsRef = React.useRef<{
+  const chartControlsRef = useRef<{
     setData: (symbolName: string, priceBars: TPriceBar[]) => void;
     onNewTrade: (
       priceBar: TPriceBar,
@@ -23,9 +24,10 @@ export default function RealtimeTickingStockCharts() {
     addBoxAnnotation: () => void;
     deleteSelectedAnnotations: () => void;
   }>(undefined);
-  const [providerId, setProviderId] = React.useState<string>("random");
-  const [activeTool, setActiveTool] = React.useState<string>("pan");
-  const [isCursorEnabled, setIsCursorEnabled] = React.useState<boolean>(false);
+  const [providerId, setProviderId] = useState<string>("random");
+  const [activePeriod, setActivePeriod] = useState<string>("1D");
+  const [activeTool, setActiveTool] = useState<string>("pan");
+  const [isCursorEnabled, setIsCursorEnabled] = useState<boolean>(false);
 
   const handleProviderChanged = (event: any) => {
     setProviderId(event.target.value);
@@ -46,7 +48,11 @@ export default function RealtimeTickingStockCharts() {
     }
   };
 
-  React.useEffect(() => {
+  const handlePeriodChange = (period: string) => {
+    setActivePeriod(period);
+  };
+
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const activeElement = document.activeElement as HTMLElement;
       const isInput =
@@ -65,7 +71,10 @@ export default function RealtimeTickingStockCharts() {
     };
   }, []);
 
-  const initFunc = createChartInitializer(providerId);
+  const initFunc = useMemo(
+    () => createChartInitializer(providerId, activePeriod),
+    [providerId, activePeriod],
+  );
 
   return (
     <div
@@ -79,7 +88,13 @@ export default function RealtimeTickingStockCharts() {
     >
       <div
         className={commonClasses.ToolbarRow}
-        style={{ flex: "none", borderBottom: "1px solid #2B2B43" }}
+        style={{
+          flex: "none",
+          borderBottom: "1px solid #2B2B43",
+          display: "flex",
+          alignItems: "center",
+          paddingRight: "10px",
+        }}
       >
         <FormControl sx={{ m: 1, minWidth: 150 }}>
           <InputLabel
@@ -123,7 +138,7 @@ export default function RealtimeTickingStockCharts() {
         }}
       >
         <SciChartReact
-          key={providerId}
+          key={`${providerId}-${activePeriod}`}
           initChart={initFunc}
           onInit={(initResult: TResolvedReturnType<typeof initFunc>) => {
             const { subscription, controls } = initResult;
@@ -157,6 +172,10 @@ export default function RealtimeTickingStockCharts() {
           onDeleteSelected={() =>
             chartControlsRef.current?.deleteSelectedAnnotations()
           }
+        />
+        <TimeFrameSelector
+          selectedPeriod={activePeriod}
+          onPeriodChange={handlePeriodChange}
         />
       </div>
     </div>
