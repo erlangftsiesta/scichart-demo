@@ -22,6 +22,7 @@ interface ChartToolbarProps {
   onAddLine: () => void;
   onAddBox: () => void;
   onDeleteSelected: () => void;
+  style?: React.CSSProperties;
 }
 
 export const ChartToolbar: React.FC<ChartToolbarProps> = ({
@@ -32,6 +33,7 @@ export const ChartToolbar: React.FC<ChartToolbarProps> = ({
   onAddLine,
   onAddBox,
   onDeleteSelected,
+  style,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -48,23 +50,22 @@ export const ChartToolbar: React.FC<ChartToolbarProps> = ({
   return (
     <Paper
       elevation={3}
+      style={style}
       sx={{
-        position: isMobile ? "relative" : "fixed",
+        position: "relative",
         zIndex: 1000,
         width: isMobile ? "100%" : "auto",
         bottom: isMobile ? 0 : "auto",
-        top: isMobile ? "auto" : "50%",
-        left: isMobile ? 0 : 20,
-        transform: isMobile ? "none" : "translateY(-50%)",
+        // top: isMobile ? "auto" : "50%",
+        // left: isMobile ? 0 : 20,
+        // transform: isMobile ? "none" : "translateY(-50%)",
         display: "flex",
         flexDirection: isMobile ? "row" : "column",
         justifyContent: isMobile ? "space-around" : "center",
         alignItems: "center",
         backgroundColor: "#131722",
-        borderTop: isMobile ? "1px solid #2B2B43" : "none",
-        border: isMobile ? "none" : "1px solid rgba(255,255,255,0.1)",
-        borderRadius: isMobile ? 0 : 1,
         padding: isMobile ? "10px 0" : "10px 5px",
+        borderRight: isMobile ? "none" : "1px solid #2B2B43",
         gap: isMobile ? 0 : 1,
         boxShadow: "none",
       }}

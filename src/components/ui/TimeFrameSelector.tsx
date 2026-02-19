@@ -51,7 +51,7 @@ export const TimeFrameSelector: React.FC<TimeFrameSelectorProps> = ({
           sx={{
             minWidth: "auto",
             padding: "4px 8px",
-            color: selectedPeriod === period.label ? "#2962FF" : "#B2B5BE", // Blue if active, grey otherwise
+            color: selectedPeriod === period.label ? "#2962FF" : "#B2B5BE",
             fontWeight: selectedPeriod === period.label ? "bold" : "normal",
             fontSize: "13px",
             "&:hover": {
@@ -64,28 +64,6 @@ export const TimeFrameSelector: React.FC<TimeFrameSelectorProps> = ({
           {period.label}
         </Button>
       ))}
-
-      {/* <Box
-        sx={{
-          width: "1px",
-          height: "20px",
-          backgroundColor: "#2B2B43",
-          margin: "0 8px",
-        }}
-      />
-
-      <Tooltip title="Select Date Range">
-        <IconButton
-          size="small"
-          sx={{
-            color: "#B2B5BE",
-            "&:hover": { color: "#2962FF" },
-          }}
-        >
-          <CalendarTodayIcon fontSize="small" />
-        </IconButton>
-      </Tooltip>
-    </Box> */}
     </Box>
   );
 };

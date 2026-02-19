@@ -1,5 +1,12 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import commonClasses from "./styles/Examples.module.scss";
 import { SciChartReact, TResolvedReturnType } from "scichart-react";
 import { appTheme } from "./styles/theme";
@@ -76,6 +83,9 @@ export default function RealtimeTickingStockCharts() {
     [providerId, activePeriod],
   );
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <div
       className={commonClasses.ChartWrapper}
@@ -131,37 +141,12 @@ export default function RealtimeTickingStockCharts() {
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
+          flexDirection: isMobile ? "column" : "row",
           height: "100dvh",
           width: "100%",
           overflow: "hidden",
         }}
       >
-        <SciChartReact
-          key={`${providerId}-${activePeriod}`}
-          initChart={initFunc}
-          onInit={(initResult: TResolvedReturnType<typeof initFunc>) => {
-            const { subscription, controls } = initResult;
-            chartControlsRef.current = controls;
-            controls.setTool(activeTool);
-            controls.toggleCursor(isCursorEnabled);
-
-            return () => {
-              subscription.unsubscribe();
-            };
-          }}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            flex: 1,
-            minHeight: 0,
-            height: "100%",
-          }}
-          innerContainerProps={{
-            style: { width: "100%", height: "100%" },
-          }}
-        />
         <ChartToolbar
           activeTool={activeTool}
           onToolChange={handleToolChange}
@@ -172,11 +157,49 @@ export default function RealtimeTickingStockCharts() {
           onDeleteSelected={() =>
             chartControlsRef.current?.deleteSelectedAnnotations()
           }
+          style={{
+            order: isMobile ? 2 : 0,
+          }}
         />
-        <TimeFrameSelector
-          selectedPeriod={activePeriod}
-          onPeriodChange={handlePeriodChange}
-        />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            height: "100%",
+            order: isMobile ? 1 : 0,
+          }}
+        >
+          <SciChartReact
+            key={`${providerId}-${activePeriod}`}
+            initChart={initFunc}
+            onInit={(initResult: TResolvedReturnType<typeof initFunc>) => {
+              const { subscription, controls } = initResult;
+              chartControlsRef.current = controls;
+              controls.setTool(activeTool);
+              controls.toggleCursor(isCursorEnabled);
+
+              return () => {
+                subscription.unsubscribe();
+              };
+            }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              flex: 1,
+              minHeight: 0,
+              height: "100%",
+            }}
+            innerContainerProps={{
+              style: { width: "100%", height: "100%" },
+            }}
+          />
+          <TimeFrameSelector
+            selectedPeriod={activePeriod}
+            onPeriodChange={handlePeriodChange}
+          />
+        </div>
       </div>
     </div>
   );
