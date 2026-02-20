@@ -46,6 +46,5 @@ export const toggleCursor = (
   if (cursorModifier) cursorModifier.isEnabled = isEnabled;
   if (rolloverModifier) rolloverModifier.isEnabled = isEnabled;
 
-  // Notify React so ChartLegend can hide itself when cursor is off
   onCursorToggle?.(isEnabled);
 };

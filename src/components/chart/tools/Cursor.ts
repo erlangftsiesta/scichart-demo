@@ -22,6 +22,7 @@ export const createCursorModifier = () => {
     showRolloverLine: true,
     showAxisLabel: true,
     snapToDataPoint: true,
+    
   });
 
   cursorModifier.isEnabled = false;

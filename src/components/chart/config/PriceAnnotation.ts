@@ -6,7 +6,7 @@ export const PriceAnnotation = (sciChartSurface: SciChartSurface) => {
     isHidden: true,
     strokeDashArray: [2, 2],
     strokeThickness: 1,
-    axisFontSize: 13,
+    axisFontSize: 12,
     axisLabelStroke: appTheme.ForegroundColor,
     showLabel: true,
   });

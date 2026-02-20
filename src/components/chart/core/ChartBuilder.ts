@@ -4,7 +4,7 @@ import { appTheme } from "../../../styles/theme";
 import { configureAxes } from "../config/Axes";
 import { configureSeries } from "../config/Series";
 import { configureModifiers } from "../config/Modifiers";
-import { PriceAnnotation } from "../features/PriceAnnotation";
+import { PriceAnnotation } from "../config/PriceAnnotation";
 import { addLineAnnotation } from "../tools/LineAnnotaion";
 import { addBoxAnnotation } from "../tools/BoxAnnotation";
 import { deleteSelectedAnnotations } from "../tools/DeleteAnnotatation";

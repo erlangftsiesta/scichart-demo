@@ -26,7 +26,6 @@ export const configureSeries = (
     id: "candlestick-series",
   });
 
-  // Push OHLC data to React state via callback (replaces document.getElementById hack)
   candlestickSeries.rolloverModifierProps.tooltipLegendTemplate = (
     _tooltipProps: any,
     seriesInfo: any,
@@ -40,7 +39,7 @@ export const configureSeries = (
         close: seriesInfo.closeValue,
       });
     }
-    return ""; // legend rendering is handled by ChartLegend React component
+    return ""; 
   };
 
   sciChartSurface.renderableSeries.add(candlestickSeries);

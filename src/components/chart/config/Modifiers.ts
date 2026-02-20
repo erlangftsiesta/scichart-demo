@@ -26,7 +26,7 @@ export const configureModifiers = (sciChartSurface: SciChartSurface) => {
     selectionModifier,
     cursorModifier.cursorModifier,
     cursorModifier.rolloverModifier,
-    new MouseWheelZoomModifier(),
+    new MouseWheelZoomModifier({ xyDirection: EXyDirection.XyDirection }),
     new AnnotationHoverModifier(),
   );
 

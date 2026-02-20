@@ -19,7 +19,7 @@ export const configureAxes = (
   const xAxis = new DateTimeNumericAxis(wasmContext, {
     drawMajorGridLines: true,
     drawMinorGridLines: false,
-    drawMajorBands: false,
+    drawMajorBands: true,
     axisBorder: { border: 0, color: "Transparent" },
     majorGridLineStyle: {
       color: appTheme.TV_Grid,
@@ -27,7 +27,7 @@ export const configureAxes = (
     },
     labelStyle: {
       color: "#787B86",
-      fontSize: 10,
+      fontSize: 12,
     },
   });
   sciChartSurface.xAxes.add(xAxis);
@@ -48,8 +48,14 @@ export const configureAxes = (
     },
     labelStyle: {
       color: "#787B86",
-      fontSize: 10,
+      fontSize: 12,
     },
+    autoRangeAnimation: {
+      duration: 1000,
+      animateInitialRanging: false,
+      animateSubsequentRanging: true
+    },
+    allowFastMath: true,
   });
   sciChartSurface.yAxes.add(yAxis);
 

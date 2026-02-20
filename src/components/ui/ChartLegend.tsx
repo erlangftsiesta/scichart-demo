@@ -15,10 +15,6 @@ interface ChartLegendProps {
   visible: boolean;
 }
 
-/**
- * TradingView-style OHLC legend rendered as a React overlay on top of the chart.
- * Fully responsive — stays within the viewport on mobile.
- */
 export const ChartLegend: React.FC<ChartLegendProps> = ({ data, visible }) => {
   if (!visible || !data) return null;
 
@@ -36,12 +32,11 @@ export const ChartLegend: React.FC<ChartLegendProps> = ({ data, visible }) => {
         top: 8,
         left: 8,
         zIndex: 10,
-        pointerEvents: "none", // don't block chart interaction
-        maxWidth: "calc(100% - 60px)", // never overflow the chart edge
+        pointerEvents: "none", 
+        maxWidth: "calc(100% - 60px)", 
         overflow: "hidden",
       }}
     >
-      {/* Symbol name row */}
       <Typography
         component="span"
         sx={{
@@ -56,7 +51,6 @@ export const ChartLegend: React.FC<ChartLegendProps> = ({ data, visible }) => {
         {data.name}
       </Typography>
 
-      {/* OHLC + change row — wraps on very small screens */}
       <Box
         sx={{
           display: "flex",
