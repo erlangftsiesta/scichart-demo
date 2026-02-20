@@ -14,6 +14,7 @@ import { appTheme } from "../styles/theme";
 import { ChartToolbar } from "../components/ui/ChartToolbar";
 import { TimeFrameSelector } from "../components/ui/TimeFrameSelector";
 import { ChartLegend, OhlcLegendData } from "../components/ui/ChartLegend";
+import { AnnotationPopup } from "../components/ui/AnnotationPopup";
 import { CHART_PROVIDERS } from "../services/ChartProviders";
 import { createChartInitializer } from "../components/chart/core/ChartInitializer";
 import { TPriceBar } from "../types/types";
@@ -34,6 +35,8 @@ export default function TradePage() {
     deleteSelectedAnnotations: () => void;
   }>(undefined);
 
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+
   const [providerId, setProviderId] = useState<string>("random");
   const [activePeriod, setActivePeriod] = useState<string>("1D");
   const [activeTool, setActiveTool] = useState<string>("pan");
@@ -43,10 +46,44 @@ export default function TradePage() {
   const [ohlcData, setOhlcData] = useState<OhlcLegendData | null>(null);
   const [legendVisible, setLegendVisible] = useState<boolean>(false);
 
+  // Annotation popup state
+  const [annotationPopup, setAnnotationPopup] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+  }>({ visible: false, x: 0, y: 0 });
+
   // Stable callback: passed into chart at init time — never changes identity
   const handleOhlcUpdate = useCallback((data: OhlcLegendData | null) => {
     setOhlcData(data);
   }, []);
+
+  // Stable callback: fires when any annotation is selected/deselected
+  const handleAnnotationSelected = useCallback(
+    (event: { selected: boolean; pixelX: number; pixelY: number }) => {
+      if (event.selected) {
+        // pixelX/Y are relative to the SciChart canvas — we offset by the container top
+        const containerRect =
+          chartContainerRef.current?.getBoundingClientRect();
+        const canvasEl = chartContainerRef.current?.querySelector("canvas");
+        const canvasRect = canvasEl?.getBoundingClientRect();
+        const offsetX =
+          canvasRect && containerRect
+            ? canvasRect.left - containerRect.left
+            : 0;
+        const offsetY =
+          canvasRect && containerRect ? canvasRect.top - containerRect.top : 0;
+        setAnnotationPopup({
+          visible: true,
+          x: event.pixelX + offsetX,
+          y: event.pixelY + offsetY - 8,
+        });
+      } else {
+        setAnnotationPopup((prev) => ({ ...prev, visible: false }));
+      }
+    },
+    [],
+  );
 
   const handleProviderChanged = (event: any) =>
     setProviderId(event.target.value);
@@ -66,6 +103,11 @@ export default function TradePage() {
 
   const handlePeriodChange = (period: string) => setActivePeriod(period);
 
+  const handleDeleteSelected = useCallback(() => {
+    chartControlsRef.current?.deleteSelectedAnnotations();
+    setAnnotationPopup((prev) => ({ ...prev, visible: false }));
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const activeElement = document.activeElement as HTMLElement;
@@ -74,16 +116,22 @@ export default function TradePage() {
         activeElement.tagName === "TEXTAREA" ||
         activeElement.isContentEditable;
       if ((event.key === "Delete" || event.key === "Backspace") && !isInput) {
-        chartControlsRef.current?.deleteSelectedAnnotations();
+        handleDeleteSelected();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [handleDeleteSelected]);
 
   const initFunc = useMemo(
-    () => createChartInitializer(providerId, activePeriod, handleOhlcUpdate),
-    [providerId, activePeriod, handleOhlcUpdate],
+    () =>
+      createChartInitializer(
+        providerId,
+        activePeriod,
+        handleOhlcUpdate,
+        handleAnnotationSelected,
+      ),
+    [providerId, activePeriod, handleOhlcUpdate, handleAnnotationSelected],
   );
 
   const theme = useTheme();
@@ -158,14 +206,12 @@ export default function TradePage() {
           onToggleCursor={handleToggleCursor}
           onAddLine={() => chartControlsRef.current?.addLineAnnotation()}
           onAddBox={() => chartControlsRef.current?.addBoxAnnotation()}
-          onDeleteSelected={() =>
-            chartControlsRef.current?.deleteSelectedAnnotations()
-          }
           style={{ order: isMobile ? 2 : 0 }}
         />
 
         {/* Chart + legend overlay container */}
         <div
+          ref={chartContainerRef}
           style={{
             position: "relative",
             display: "flex",
@@ -175,8 +221,14 @@ export default function TradePage() {
             order: isMobile ? 1 : 0,
           }}
         >
-          {/* React legend overlay — fully responsive, never overflows */}
           <ChartLegend data={ohlcData} visible={legendVisible} />
+
+          <AnnotationPopup
+            visible={annotationPopup.visible}
+            x={annotationPopup.x}
+            y={annotationPopup.y}
+            onDelete={handleDeleteSelected}
+          />
 
           <SciChartReact
             key={`${providerId}-${activePeriod}`}

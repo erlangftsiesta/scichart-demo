@@ -30,5 +30,30 @@ export const addLineAnnotation = (
     isEditable: true,
     annotationLayer: EAnnotationLayer.AboveChart,
   });
+
+  lineAnnotation.selectedChanged.subscribe(() => {
+    const cb = (sciChartSurface as any).__onAnnotationSelected;
+    if (!cb) return;
+    if (lineAnnotation.isSelected) {
+      const xCalc = sciChartSurface.xAxes
+        .get(0)
+        .getCurrentCoordinateCalculator();
+      const yCalc = sciChartSurface.yAxes
+        .get(0)
+        .getCurrentCoordinateCalculator();
+      const px =
+        (xCalc.getCoordinate(lineAnnotation.x1) +
+          xCalc.getCoordinate(lineAnnotation.x2)) /
+        2;
+      const py = Math.min(
+        yCalc.getCoordinate(lineAnnotation.y1),
+        yCalc.getCoordinate(lineAnnotation.y2),
+      );
+      cb({ selected: true, pixelX: px, pixelY: py });
+    } else {
+      cb({ selected: false, pixelX: 0, pixelY: 0 });
+    }
+  });
+
   sciChartSurface.annotations.add(lineAnnotation);
 };

@@ -283,6 +283,27 @@ export class Measurment extends ChartModifierBase2D {
 
           const onSelected = () => {
             [x1M, x2M, y1M, y2M].forEach((m) => (m.isHidden = !box.isSelected));
+            const cb = (this.parentSurface as any).__onAnnotationSelected;
+            if (cb) {
+              if (box.isSelected) {
+                const xCalc = this.parentSurface.xAxes
+                  .get(0)
+                  .getCurrentCoordinateCalculator();
+                const yCalc = this.parentSurface.yAxes
+                  .get(0)
+                  .getCurrentCoordinateCalculator();
+                const px =
+                  (xCalc.getCoordinate(box.x1) + xCalc.getCoordinate(box.x2)) /
+                  2;
+                const py = Math.min(
+                  yCalc.getCoordinate(box.y1),
+                  yCalc.getCoordinate(box.y2),
+                );
+                cb({ selected: true, pixelX: px, pixelY: py });
+              } else {
+                cb({ selected: false, pixelX: 0, pixelY: 0 });
+              }
+            }
           };
 
           box.dragDelta.subscribe(updateMarkers);

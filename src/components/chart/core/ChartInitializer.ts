@@ -2,17 +2,20 @@ import { TResolvedReturnType } from "scichart-react";
 import { createCandlestickChart } from "./ChartBuilder";
 import { CHART_PROVIDERS } from "../../../services/ChartProviders";
 import { OhlcLegendData } from "../../ui/ChartLegend";
+import { AnnotationSelectionCallback } from "../utils/AnnotationSelection";
 
 export const createChartInitializer =
   (
     providerId: string,
     period: string,
     onOhlcUpdate: (data: OhlcLegendData | null) => void,
+    onAnnotationSelected?: AnnotationSelectionCallback,
   ) =>
   async (rootElement: string | HTMLDivElement) => {
     const { sciChartSurface, controls } = await createCandlestickChart(
       rootElement,
       onOhlcUpdate,
+      onAnnotationSelected,
     );
 
     const provider = CHART_PROVIDERS[providerId] || CHART_PROVIDERS["random"];

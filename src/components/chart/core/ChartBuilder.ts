@@ -11,15 +11,21 @@ import { deleteSelectedAnnotations } from "../tools/DeleteAnnotatation";
 import { setData, onNewTrade } from "../utils/ChartData";
 import { setXRange, setTool, toggleCursor } from "./ChartControls";
 import { OhlcLegendData } from "../../ui/ChartLegend";
+import { AnnotationSelectionCallback } from "../utils/AnnotationSelection";
 
 export const createCandlestickChart = async (
   rootElement: string | HTMLDivElement,
   onOhlcUpdate: (data: OhlcLegendData | null) => void,
+  onAnnotationSelected?: AnnotationSelectionCallback,
 ) => {
   const { sciChartSurface, wasmContext } = await SciChartSurface.create(
     rootElement,
     { theme: appTheme.TradingViewTheme },
   );
+
+  // Store callback on the surface so annotation tools can fire it without coupling
+  (sciChartSurface as any).__onAnnotationSelected =
+    onAnnotationSelected ?? null;
 
   const { xAxis } = configureAxes(sciChartSurface, wasmContext);
   const { candleDataSeries } = configureSeries(
@@ -54,6 +60,11 @@ export const createCandlestickChart = async (
     addLineAnnotation: () => addLineAnnotation(sciChartSurface, xAxis),
     addBoxAnnotation: () => addBoxAnnotation(sciChartSurface, xAxis),
     deleteSelectedAnnotations: () => deleteSelectedAnnotations(sciChartSurface),
+    setAnnotationSelectionCallback: (
+      cb: AnnotationSelectionCallback | null,
+    ) => {
+      (sciChartSurface as any).__onAnnotationSelected = cb;
+    },
   };
 
   return { sciChartSurface, controls };

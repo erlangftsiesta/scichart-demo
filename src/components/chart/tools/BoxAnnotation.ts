@@ -60,6 +60,28 @@ export const addBoxAnnotation = (
     if (markers) {
       markers.forEach((m) => (m.isHidden = !boxAnnotation.isSelected));
     }
+    const cb = (sciChartSurface as any).__onAnnotationSelected;
+    if (cb) {
+      if (boxAnnotation.isSelected) {
+        const xCalc = sciChartSurface.xAxes
+          .get(0)
+          .getCurrentCoordinateCalculator();
+        const yCalc = sciChartSurface.yAxes
+          .get(0)
+          .getCurrentCoordinateCalculator();
+        const px =
+          (xCalc.getCoordinate(boxAnnotation.x1) +
+            xCalc.getCoordinate(boxAnnotation.x2)) /
+          2;
+        const py = Math.min(
+          yCalc.getCoordinate(boxAnnotation.y1),
+          yCalc.getCoordinate(boxAnnotation.y2),
+        );
+        cb({ selected: true, pixelX: px, pixelY: py });
+      } else {
+        cb({ selected: false, pixelX: 0, pixelY: 0 });
+      }
+    }
   };
 
   boxAnnotation.dragDelta.subscribe(updateMarkers);
