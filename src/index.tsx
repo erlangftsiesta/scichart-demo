@@ -8,8 +8,8 @@ import "./styles/main.scss";
 const rootElement = document.getElementById("root");
 
 SciChartSurface.UseCommunityLicense();
-SciChartSurface.loadWasmFromCDN();
-SciChart3DSurface.loadWasmFromCDN();
+SciChartSurface.configure({ wasmUrl: "/scichart2d.wasm" });
+SciChart3DSurface.configure({ wasmUrl: "/scichart3d.wasm" });
 
 const root = createRoot(rootElement!);
 root.render(

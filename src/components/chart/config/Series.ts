@@ -14,6 +14,8 @@ export const configureSeries = (
 ) => {
   const candleDataSeries = new OhlcDataSeries(wasmContext, {
     dataSeriesName: "BTC/USDT",
+    containsNaN: false,
+    isSorted: true,
   });
 
   const candlestickSeries = new FastCandlestickRenderableSeries(wasmContext, {
@@ -26,7 +28,7 @@ export const configureSeries = (
     id: "candlestick-series",
   });
 
-  candlestickSeries.rolloverModifierProps.tooltipLegendTemplate = (
+  const tooltipLegendTemplate = (
     _tooltipProps: any,
     seriesInfo: any,
   ): string => {
@@ -44,5 +46,5 @@ export const configureSeries = (
 
   sciChartSurface.renderableSeries.add(candlestickSeries);
 
-  return { candleDataSeries, candlestickSeries };
+  return { candleDataSeries, candlestickSeries, tooltipLegendTemplate };
 };

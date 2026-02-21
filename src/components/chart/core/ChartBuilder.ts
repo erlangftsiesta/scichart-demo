@@ -28,12 +28,14 @@ export const createCandlestickChart = async (
     onAnnotationSelected ?? null;
 
   const { xAxis } = configureAxes(sciChartSurface, wasmContext);
-  const { candleDataSeries } = configureSeries(
+  const { candleDataSeries, tooltipLegendTemplate } = configureSeries(
     sciChartSurface,
     wasmContext,
     onOhlcUpdate,
   );
   const modifiers = configureModifiers(sciChartSurface);
+  modifiers.rolloverModifier.tooltipLegendTemplate = tooltipLegendTemplate;
+
   const { latestPriceAnnotation } = PriceAnnotation(sciChartSurface);
 
   const controls = {
