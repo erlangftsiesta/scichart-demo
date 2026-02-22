@@ -3,7 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import { SciChartSurface, SciChart3DSurface } from "scichart";
 
 import App from "./App";
-import "./styles/main.scss";
+import "./Shared/styles/main.scss";
 
 const rootElement = document.getElementById("root");
 
