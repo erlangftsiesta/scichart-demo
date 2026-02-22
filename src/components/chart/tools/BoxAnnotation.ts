@@ -9,7 +9,11 @@ import {
 import { appTheme } from "../../../styles/theme";
 import { calculateCenter } from "../../../utils/calculateCenter";
 import { formatDate, formatPrice } from "../../../utils/formatters";
-import { createAxisMarker } from "../utils/AxisMarkers";
+import {
+  createAxisMarker,
+  updateXAxisMarker,
+  updateYAxisMarker,
+} from "../utils/Custom/AxisMarkersCustom";
 
 export const addBoxAnnotation = (
   sciChartSurface: SciChartSurface,
@@ -22,11 +26,13 @@ export const addBoxAnnotation = (
 
   const { x1, x2, y1, y2 } = calculateCenter(xRange, yRange);
 
+  const color = appTheme.VividPurple;
+
   const boxAnnotation = new BoxAnnotation({
     xCoordinateMode: ECoordinateMode.DataValue,
     yCoordinateMode: ECoordinateMode.DataValue,
-    fill: appTheme.VividPurple + "33",
-    stroke: appTheme.VividPurple,
+    fill: color + "33",
+    stroke: color,
     strokeThickness: 1,
     x1,
     y1,
@@ -36,23 +42,16 @@ export const addBoxAnnotation = (
     annotationLayer: EAnnotationLayer.AboveChart,
   });
 
-  const y1Marker = createAxisMarker(y1, formatPrice);
-  const y2Marker = createAxisMarker(y2, formatPrice);
-  const x1Marker = createAxisMarker(x1, formatDate);
-  const x2Marker = createAxisMarker(x2, formatDate);
+  const y1Marker = createAxisMarker(y1, formatPrice, false, "start", color);
+  const y2Marker = createAxisMarker(y2, formatPrice, false, "end", color);
+  const x1Marker = createAxisMarker(x1, formatDate, true, "start", color);
+  const x2Marker = createAxisMarker(x2, formatDate, true, "end", color);
 
   const updateMarkers = () => {
-    y1Marker.y1 = boxAnnotation.y1;
-    y1Marker.formattedValue = formatPrice(boxAnnotation.y1);
-
-    y2Marker.y1 = boxAnnotation.y2;
-    y2Marker.formattedValue = formatPrice(boxAnnotation.y2);
-
-    x1Marker.x1 = boxAnnotation.x1;
-    x1Marker.formattedValue = formatDate(boxAnnotation.x1);
-
-    x2Marker.x1 = boxAnnotation.x2;
-    x2Marker.formattedValue = formatDate(boxAnnotation.x2);
+    updateYAxisMarker(y1Marker, boxAnnotation.y1, formatPrice, color, "start");
+    updateYAxisMarker(y2Marker, boxAnnotation.y2, formatPrice, color, "end");
+    updateXAxisMarker(x1Marker, boxAnnotation.x1, formatDate, color, "start");
+    updateXAxisMarker(x2Marker, boxAnnotation.x2, formatDate, color, "end");
   };
 
   const onSelected = () => {
