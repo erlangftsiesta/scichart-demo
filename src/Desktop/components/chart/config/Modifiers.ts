@@ -10,9 +10,9 @@ import {
 } from "scichart";
 import { Measurment } from "../tools/Measurement";
 import { CrosshairTool } from "../tools/Crosshair";
-import { createCursorModifier } from "../tools/Cursor";
+import { OhlcLegendData } from "../../../../Shared/hooks/useChartLegend";
 
-export const configureModifiers = (sciChartSurface: SciChartSurface) => {
+export const configureModifiers = (sciChartSurface: SciChartSurface, onOhlcUpdate: (data: OhlcLegendData | null) => void) => {
   const zoomPanModifier = new ZoomPanModifier({ enableZoom: true });
   zoomPanModifier.isEnabled = false;
 
@@ -22,14 +22,13 @@ export const configureModifiers = (sciChartSurface: SciChartSurface) => {
   const mouseWheelZoomModifier = new MouseWheelZoomModifier({
     xyDirection: EXyDirection.XyDirection,
   });
-  const cursorModifier = createCursorModifier();
 
   (pinchZoomModifier as any).scaleFactor = 0.0005;
 
   const measurmentModifier = new Measurment();
   measurmentModifier.isEnabled = false;
 
-  const crosshairTool = new CrosshairTool();
+  const crosshairTool = new CrosshairTool(onOhlcUpdate);
   crosshairTool.isEnabled = true;
 
   sciChartSurface.chartModifiers.add(
@@ -38,16 +37,12 @@ export const configureModifiers = (sciChartSurface: SciChartSurface) => {
     pinchZoomModifier,
     mouseWheelZoomModifier,
     measurmentModifier,
-    cursorModifier.cursorModifier,
-    cursorModifier.rolloverModifier,
     new AnnotationHoverModifier(),
   );
 
   return {
     crosshairTool,
     zoomPanModifier,
-    cursorModifier: cursorModifier.cursorModifier,
-    rolloverModifier: cursorModifier.rolloverModifier,
     measurmentModifier,
   };
 };

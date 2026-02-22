@@ -7,7 +7,7 @@ import {
   FastCandlestickRenderableSeries,
 } from "scichart";
 import { appTheme } from "../../../../Shared/styles/theme";
-import { OhlcLegendData } from "../ui/ChartLegend";
+import { OhlcLegendData } from "../../../../Shared/hooks/useChartLegend";
 
 export const configureSeries = (
   sciChartSurface: SciChartSurface,

@@ -1,37 +1,18 @@
-import React, { useState } from "react";
-import { Box, Button, IconButton, Tooltip } from "@mui/material";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-
+import React from "react";
+import { Box, Button } from "@mui/material";
 import { appTheme } from "../../../../Shared/styles/theme";
-
-interface TimeRange {
-  from: number;
-  to: number;
-}
+import { useTimeFrameSelector } from "../../../../Shared/hooks/useTimeFrameSelector";
 
 interface TimeFrameSelectorProps {
   onPeriodChange: (period: string) => void;
   selectedPeriod: string;
 }
 
-const PERIODS = [
-  { label: "1D", days: 1 },
-  { label: "5D", days: 5 },
-  { label: "1M", months: 1 },
-  { label: "6M", months: 6 },
-  { label: "YTD", ytd: true },
-  { label: "1Y", years: 1 },
-  { label: "5Y", years: 5 },
-  { label: "All", all: true },
-];
-
-export const TimeFrameSelector: React.FC<TimeFrameSelectorProps> = ({
+export const TimeFrameSelectorDesktop: React.FC<TimeFrameSelectorProps> = ({
   onPeriodChange,
   selectedPeriod,
 }) => {
-  const handlePeriodClick = (period: (typeof PERIODS)[0]) => {
-    onPeriodChange(period.label);
-  };
+  const { PERIODS, handlePeriodClick } = useTimeFrameSelector(onPeriodChange);
 
   return (
     <Box
@@ -61,7 +42,7 @@ export const TimeFrameSelector: React.FC<TimeFrameSelectorProps> = ({
             fontSize: "13px",
             "&:hover": {
               color: appTheme.VividBlue,
-              backgroundColor: "rgba(41, 98, 255, 0.08)", // Keep opacity helper or move to theme if possible
+              backgroundColor: "rgba(41, 98, 255, 0.08)",
             },
             textTransform: "none",
           }}

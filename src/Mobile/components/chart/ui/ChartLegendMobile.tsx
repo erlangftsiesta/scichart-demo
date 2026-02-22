@@ -1,29 +1,19 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { TV } from "../../../../Shared/styles/theme";
-
-export interface OhlcLegendData {
-  name: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-}
+import { useChartLegend, OhlcLegendData } from "../../../../Shared/hooks/useChartLegend";
 
 interface ChartLegendProps {
   data: OhlcLegendData | null;
   visible: boolean;
 }
 
-export const ChartLegend: React.FC<ChartLegendProps> = ({ data, visible }) => {
-  if (!visible || !data) return null;
+export const ChartLegendMobile: React.FC<ChartLegendProps> = ({ data, visible }) => {
+  const { shouldRender, changeData } = useChartLegend(data, visible);
 
-  const change = data.close - data.open;
-  const pct = ((change / data.open) * 100).toFixed(2);
-  const color = change >= 0 ? TV.Green : TV.Red;
-  const sign = change >= 0 ? "+" : "";
+  if (!shouldRender || !data || !changeData) return null;
 
-  const fmt = (v: number) => v.toFixed(2);
+  const { change, pct, color, sign, fmt } = changeData;
 
   return (
     <Box
@@ -33,7 +23,7 @@ export const ChartLegend: React.FC<ChartLegendProps> = ({ data, visible }) => {
         left: 8,
         zIndex: 10,
         pointerEvents: "none", 
-        maxWidth: "calc(100% - 60px)", 
+        maxWidth: "calc(100% - 16px)", 
         overflow: "hidden",
       }}
     >
@@ -41,11 +31,11 @@ export const ChartLegend: React.FC<ChartLegendProps> = ({ data, visible }) => {
         component="span"
         sx={{
           display: "block",
-          fontSize: { xs: "11px", sm: "12px" },
+          fontSize: "12px",
           fontWeight: 600,
           color: TV.TextPrimary,
           lineHeight: 1.4,
-          mb: "2px",
+          mb: "4px",
         }}
       >
         {data.name}
@@ -55,9 +45,10 @@ export const ChartLegend: React.FC<ChartLegendProps> = ({ data, visible }) => {
         sx={{
           display: "flex",
           flexWrap: "wrap",
-          gap: "6px",
-          fontSize: { xs: "11px", sm: "12px" },
-          lineHeight: 1.4,
+          columnGap: "8px",
+          rowGap: "2px",
+          fontSize: "11px",
+          lineHeight: 1.2,
         }}
       >
         <OhlcItem label="O" value={fmt(data.open)} color={color} />
@@ -66,7 +57,7 @@ export const ChartLegend: React.FC<ChartLegendProps> = ({ data, visible }) => {
         <OhlcItem label="C" value={fmt(data.close)} color={color} />
         <Typography
           component="span"
-          sx={{ fontSize: "inherit", color, fontWeight: 500 }}
+          sx={{ fontSize: "inherit", color, fontWeight: 500, width: "100%" }}
         >
           {sign}
           {fmt(change)} ({sign}

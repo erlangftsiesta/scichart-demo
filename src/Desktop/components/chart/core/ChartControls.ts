@@ -28,6 +28,7 @@ export const setTool = (
 
   switch (tool) {
     case "crosshair":
+      zoomPanModifier.isEnabled = true;
       crosshairTool.isEnabled = true;
       break;
     case "pan":
@@ -38,20 +39,8 @@ export const setTool = (
       zoomPanModifier.isEnabled = true;
       break;
     default:
-      // fallback: crosshair as default
+      zoomPanModifier.isEnabled = true;
       if (crosshairTool) crosshairTool.isEnabled = true;
       break;
   }
-};
-
-export const toggleCursor = (
-  modifiers: { [key: string]: ChartModifierBase2D },
-  isEnabled: boolean,
-  onCursorToggle?: (enabled: boolean) => void,
-) => {
-  const { cursorModifier, rolloverModifier } = modifiers;
-  if (cursorModifier) cursorModifier.isEnabled = isEnabled;
-  if (rolloverModifier) rolloverModifier.isEnabled = isEnabled;
-
-  onCursorToggle?.(isEnabled);
 };

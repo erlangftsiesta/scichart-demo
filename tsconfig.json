@@ -4,7 +4,7 @@
     "strict": false,
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
-    "target": "es2024",
+    "target": "esnext",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "downlevelIteration": true,

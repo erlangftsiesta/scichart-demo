@@ -11,6 +11,7 @@ import {
   OhlcDataSeries,
 } from "scichart";
 import { formatDate, formatPrice } from "../../../utils/formatters";
+import { OhlcLegendData } from "../../../../Shared/hooks/useChartLegend";
 
 const CROSSHAIR_COLOR = "#9B9B9B";
 const LABEL_BG = "#2B2B43";
@@ -28,9 +29,11 @@ export class CrosshairTool extends ChartModifierBase2D {
   // Cache xValues agar tidak re-fetch tiap mousemove
   private cachedXValues: number[] | undefined;
   private cachedDataCount: number = 0;
+  private onOhlcUpdate?: (data: OhlcLegendData | null) => void;
 
-  constructor() {
+  constructor(onOhlcUpdate?: (data: OhlcLegendData | null) => void) {
     super();
+    this.onOhlcUpdate = onOhlcUpdate;
   }
 
   // ── Ambil xValues dari OhlcDataSeries SciChart ──────────────────────────────
@@ -78,10 +81,10 @@ export class CrosshairTool extends ChartModifierBase2D {
     }
   }
 
-  // ── Binary search snap ke bar terdekat ──────────────────────────────────────
-  private snapToNearestBar(xVal: number): number {
+  // ── Snap ke bar terdekat (kembalikan index) ────────────────────────────────
+  private snapToNearestBarIndex(xVal: number): number {
     const xValues = this.getXValues();
-    if (!xValues.length) return xVal;
+    if (!xValues.length) return -1;
 
     let lo = 0;
     let hi = xValues.length - 1;
@@ -95,10 +98,10 @@ export class CrosshairTool extends ChartModifierBase2D {
     if (lo > 0) {
       const distPrev = Math.abs(xValues[lo - 1] - xVal);
       const distCurr = Math.abs(xValues[lo] - xVal);
-      return distPrev <= distCurr ? xValues[lo - 1] : xValues[lo];
+      return distPrev <= distCurr ? lo - 1 : lo;
     }
 
-    return xValues[lo];
+    return lo;
   }
 
   public modifierMouseMove(args: ModifierMouseArgs): void {
@@ -131,9 +134,41 @@ export class CrosshairTool extends ChartModifierBase2D {
     const xValRaw = xCalc.getDataValue(px);
     const yVal = yCalc.getDataValue(py);
 
-    // Snap ke bar terdekat
-    const xValSnapped = this.snapToNearestBar(xValRaw);
+    // Snapping logic
+    const index = this.snapToNearestBarIndex(xValRaw);
+    if (index === -1) return;
+    const xValues = this.getXValues();
+    const xValSnapped = xValues[index];
     const pxSnapped = xCalc.getCoordinate(xValSnapped);
+
+    if (this.onOhlcUpdate) {
+      try {
+        const series = this.parentSurface.renderableSeries.get(0);
+        const ds = series?.dataSeries as OhlcDataSeries;
+        if (ds) {
+          const getVal = (prop: string) => {
+            const getter = `getNative${prop}Values`;
+            if (typeof (ds as any)[getter] === "function") {
+              const vec = (ds as any)[getter]();
+              if (vec && typeof vec.get === "function") return vec.get(index);
+            }
+            const vec = (ds as any)[`${prop.toLowerCase()}Values`];
+            if (vec && typeof vec.get === "function") return vec.get(index);
+            if (vec && Array.isArray(vec)) return vec[index];
+            return 0;
+          };
+          this.onOhlcUpdate({
+            name: "BTC/USDT",
+            open: getVal("Open"),
+            high: getVal("High"),
+            low: getVal("Low"),
+            close: getVal("Close"),
+          });
+        }
+      } catch (e) {
+        console.warn("[CrosshairTool] OHLC update error:", e);
+      }
+    }
 
     // ── Horizontal line ──────────────────────────────────────────────────────
     if (!this.hLine) {

@@ -8,14 +8,14 @@ import {
 import commonClasses from "../../Shared/styles/Examples.module.scss";
 import { SciChartReact, TResolvedReturnType } from "scichart-react";
 import { appTheme } from "../../Shared/styles/theme";
-import { ChartToolbarDesktop } from "../components/chart/ui/ChartToolbarDesktop";
-import { TimeFrameSelectorDesktop } from "../components/chart/ui/TimeFrameSelectorDesktop";
-import { ChartLegendDesktop } from "../components/chart/ui/ChartLegendDesktop";
-import { AnnotationPopupDesktop } from "../components/chart/ui/AnnotationPopupDesktop";
+import { ChartToolbarMobile } from "../../Mobile/components/chart/ui/ChartToolbarMobile";
+import { TimeFrameSelectorMobile } from "../../Mobile/components/chart/ui/TimeFrameSelectorMobile";
+import { ChartLegendMobile } from "../../Mobile/components/chart/ui/ChartLegendMobile";
+import { AnnotationPopupMobile } from "../../Mobile/components/chart/ui/AnnotationPopupMobile";
 import { CHART_PROVIDERS } from "../../Shared/services/ChartProviders";
 import { useTradePage } from "../../Shared/hooks/useTradePage";
 
-export default function TradePageDesktop() {
+export default function TradePageMobile() {
   const {
     chartControlsRef,
     chartContainerRef,
@@ -87,20 +87,14 @@ export default function TradePageDesktop() {
       <div
         style={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: "column", // Mobile specific
           height: "100%",
           width: "100%",
           overflow: "hidden",
           flex: 1,
         }}
       >
-        <ChartToolbarDesktop
-          activeTool={activeTool}
-          onToolChange={handleToolChange}
-          onAddLine={() => chartControlsRef.current?.addLineAnnotation()}
-          onAddBox={() => chartControlsRef.current?.addBoxAnnotation()}
-        />
-
+        {/* Chart + legend overlay container */}
         <div
           ref={chartContainerRef}
           style={{
@@ -109,11 +103,12 @@ export default function TradePageDesktop() {
             flexDirection: "column",
             width: "100%",
             height: "100%",
+            flex: 1, // Take available vertical space
           }}
         >
-          <ChartLegendDesktop data={ohlcData} visible={legendVisible} />
+          <ChartLegendMobile data={ohlcData} visible={legendVisible} />
 
-          <AnnotationPopupDesktop
+          <AnnotationPopupMobile
             visible={annotationPopup.visible}
             x={annotationPopup.x}
             y={annotationPopup.y}
@@ -139,11 +134,20 @@ export default function TradePageDesktop() {
             }}
             innerContainerProps={{ style: { width: "100%", height: "100%" } }}
           />
-          <TimeFrameSelectorDesktop
+          <TimeFrameSelectorMobile
             selectedPeriod={activePeriod}
             onPeriodChange={handlePeriodChange}
           />
         </div>
+
+        {/* Toolbar pinned to bottom for mobile */}
+        <ChartToolbarMobile
+          activeTool={activeTool}
+          onToolChange={handleToolChange}
+          onAddLine={() => chartControlsRef.current?.addLineAnnotation()}
+          onAddBox={() => chartControlsRef.current?.addBoxAnnotation()}
+          style={{ width: "100%", borderTop: "1px solid #2a2e39" }}
+        />
       </div>
     </Box>
   );

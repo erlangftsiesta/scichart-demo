@@ -3,8 +3,6 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Paper,
-  useMediaQuery,
-  useTheme,
   IconButton,
   Tooltip,
   Divider,
@@ -12,37 +10,24 @@ import {
 } from "@mui/material";
 import PanToolIcon from "@mui/icons-material/PanTool";
 import HighlightAltIcon from "@mui/icons-material/HighlightAlt";
+import { useChartToolbar } from "../../../../Shared/hooks/useChartToolbar";
 
 interface ChartToolbarProps {
   activeTool: string;
   onToolChange: (tool: string) => void;
-  isCursorEnabled: boolean;
-  onToggleCursor: () => void;
   onAddLine: () => void;
   onAddBox: () => void;
   style?: React.CSSProperties;
 }
 
-export const ChartToolbar: React.FC<ChartToolbarProps> = ({
+export const ChartToolbarMobile: React.FC<ChartToolbarProps> = ({
   activeTool,
   onToolChange,
-  isCursorEnabled,
-  onToggleCursor,
   onAddLine,
   onAddBox,
   style,
 }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const handleFormat = (
-    _event: React.MouseEvent<HTMLElement>,
-    newFormat: string | null,
-  ) => {
-    if (newFormat !== null) {
-      onToolChange(newFormat);
-    }
-  };
+  const { handleFormat } = useChartToolbar(onToolChange);
 
   return (
     <Paper
@@ -51,20 +36,17 @@ export const ChartToolbar: React.FC<ChartToolbarProps> = ({
       sx={{
         position: "relative",
         zIndex: 1000,
-        width: isMobile ? "100%" : "auto",
-        bottom: isMobile ? 0 : "auto",
-        // top: isMobile ? "auto" : "50%",
-        // left: isMobile ? 0 : 20,
-        // transform: isMobile ? "none" : "translateY(-50%)",
+        width: "100%",
+        bottom: 0,
         display: "flex",
-        flexDirection: isMobile ? "row" : "column",
-        justifyContent: isMobile ? "space-around" : "center",
+        flexDirection: "row",
+        justifyContent: "space-around",
         alignItems: "center",
         backgroundColor: "background.default",
-        padding: isMobile ? "10px 0" : "10px 5px",
-        borderRight: isMobile ? "none" : "1px solid",
-        borderColor: isMobile ? "transparent" : "divider",
-        gap: isMobile ? 0 : 1,
+        padding: "10px 0",
+        borderRight: "none",
+        borderColor: "transparent",
+        gap: 0,
         boxShadow: "none",
       }}
     >
@@ -72,7 +54,7 @@ export const ChartToolbar: React.FC<ChartToolbarProps> = ({
         value={activeTool}
         exclusive
         onChange={handleFormat}
-        orientation={isMobile ? "horizontal" : "vertical"}
+        orientation="horizontal"
         aria-label="chart tools"
         size="small"
         sx={{
@@ -85,8 +67,20 @@ export const ChartToolbar: React.FC<ChartToolbarProps> = ({
           },
         }}
       >
+        <ToggleButton value="crosshair" aria-label="crosshair">
+          <Tooltip title="Crosshair" arrow placement="top">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <path fill="currentColor" d="M11 21v-8H3v-2h8V3h2v8h8v2h-8v8z" />
+            </svg>
+          </Tooltip>
+        </ToggleButton>
         <ToggleButton value="pan" aria-label="pan">
-          <Tooltip title="Pan" arrow placement={isMobile ? "top" : "right"}>
+          <Tooltip title="Pan" arrow placement="top">
             <PanToolIcon />
           </Tooltip>
         </ToggleButton>
@@ -99,50 +93,24 @@ export const ChartToolbar: React.FC<ChartToolbarProps> = ({
         </ToggleButton>
       </ToggleButtonGroup>
 
-      <ToggleButton
-        value="cursor"
-        selected={isCursorEnabled}
-        onChange={onToggleCursor}
-        aria-label="cursor"
-        size="small"
-        sx={{
-          color: "rgba(255, 255, 255, 0.5)",
-          "&.Mui-selected": {
-            color: "white",
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-          },
-        }}
-      >
-        <Tooltip title="Cursor" arrow placement={isMobile ? "top" : "right"}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-          >
-            <path fill="currentColor" d="M11 21v-8H3v-2h8V3h2v8h8v2h-8v8z" />
-          </svg>
-        </Tooltip>
-      </ToggleButton>
-
       <Divider
-        orientation={isMobile ? "vertical" : "horizontal"}
+        orientation="vertical"
         flexItem
         sx={{
           borderColor: "rgba(255,255,255,0.1)",
-          mx: isMobile ? 1 : 0,
-          my: isMobile ? 0 : 1,
+          mx: 1,
+          my: 0,
         }}
       />
 
       <Box
         sx={{
           display: "flex",
-          flexDirection: isMobile ? "row" : "column",
+          flexDirection: "row",
           gap: 1,
         }}
       >
-        <Tooltip title="Add Line" arrow placement={isMobile ? "top" : "right"}>
+        <Tooltip title="Add Line" arrow placement="top">
           <IconButton onClick={onAddLine} sx={{ color: "white" }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -158,7 +126,7 @@ export const ChartToolbar: React.FC<ChartToolbarProps> = ({
           </IconButton>
         </Tooltip>
 
-        <Tooltip title="Add Box" arrow placement={isMobile ? "top" : "right"}>
+        <Tooltip title="Add Box" arrow placement="top">
           <IconButton onClick={onAddBox} sx={{ color: "white" }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -176,4 +144,4 @@ export const ChartToolbar: React.FC<ChartToolbarProps> = ({
       </Box>
     </Paper>
   );
-};
+}

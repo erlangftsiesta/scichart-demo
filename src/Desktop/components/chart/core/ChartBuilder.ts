@@ -12,8 +12,8 @@ import { addLineAnnotation } from "../tools/LineAnnotation";
 import { addBoxAnnotation } from "../tools/BoxAnnotation";
 import { deleteSelectedAnnotations } from "../tools/DeleteAnnotation";
 import { setData, onNewTrade } from "../utils/ChartData";
-import { setXRange, setTool, toggleCursor } from "./ChartControls";
-import { OhlcLegendData } from "../ui/ChartLegend";
+import { setXRange, setTool } from "./ChartControls";
+import { OhlcLegendData } from "../../../../Shared/hooks/useChartLegend";
 import { AnnotationSelectionCallback } from "../utils/AnnotationSelection";
 
 export const createCandlestickChart = async (
@@ -36,8 +36,7 @@ export const createCandlestickChart = async (
     wasmContext,
     onOhlcUpdate,
   );
-  const modifiers = configureModifiers(sciChartSurface);
-  modifiers.rolloverModifier.tooltipLegendTemplate = tooltipLegendTemplate;
+  const modifiers = configureModifiers(sciChartSurface, onOhlcUpdate);
 
   const { latestPriceAnnotation } = PriceAnnotation(sciChartSurface);
 
@@ -60,8 +59,6 @@ export const createCandlestickChart = async (
     setXRange: (startDate: Date, endDate: Date) =>
       setXRange(xAxis, startDate, endDate),
     setTool: (tool: string) => setTool(modifiers, tool),
-    toggleCursor: (isEnabled: boolean, onToggle?: (e: boolean) => void) =>
-      toggleCursor(modifiers, isEnabled, onToggle),
     addLineAnnotation: () => addLineAnnotation(sciChartSurface, xAxis),
     addBoxAnnotation: () => addBoxAnnotation(sciChartSurface, xAxis),
     deleteSelectedAnnotations: () => deleteSelectedAnnotations(sciChartSurface),

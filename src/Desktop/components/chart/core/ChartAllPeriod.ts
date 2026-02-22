@@ -3,7 +3,7 @@
 import { TResolvedReturnType } from "scichart-react";
 import { createCandlestickChart } from "./ChartBuilder";
 import { CHART_PROVIDERS } from "../../../../Shared/services/ChartProviders";
-import { OhlcLegendData } from "../ui/ChartLegend";
+import { OhlcLegendData } from "../../../../Shared/hooks/useChartLegend";
 import { AnnotationSelectionCallback } from "../utils/AnnotationSelection";
 
 export const createChartInitializer =

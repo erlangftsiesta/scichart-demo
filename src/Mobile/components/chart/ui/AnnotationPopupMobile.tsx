@@ -9,7 +9,7 @@ interface AnnotationPopupProps {
   onDelete: () => void;
 }
 
-export const AnnotationPopup: React.FC<AnnotationPopupProps> = ({
+export const AnnotationPopupMobile: React.FC<AnnotationPopupProps> = ({
   visible,
   x,
   y,
@@ -27,12 +27,12 @@ export const AnnotationPopup: React.FC<AnnotationPopupProps> = ({
           zIndex: 2000,
           display: "flex",
           alignItems: "center",
-          gap: 0.5,
-          px: 0.5,
-          py: 0.25,
+          gap: 1,
+          px: 1,
+          py: 0.5,
           bgcolor: "#1e222d",
           border: "1px solid rgba(255,255,255,0.12)",
-          borderRadius: "6px",
+          borderRadius: "8px",
           pointerEvents: "auto",
           "&::after": {
             content: '""',
@@ -42,9 +42,9 @@ export const AnnotationPopup: React.FC<AnnotationPopupProps> = ({
             transform: "translateX(-50%)",
             width: 0,
             height: 0,
-            borderLeft: "5px solid transparent",
-            borderRight: "5px solid transparent",
-            borderTop: "5px solid rgba(255,255,255,0.12)",
+            borderLeft: "6px solid transparent",
+            borderRight: "6px solid transparent",
+            borderTop: "6px solid rgba(255,255,255,0.12)",
           },
         }}
       >
@@ -52,22 +52,22 @@ export const AnnotationPopup: React.FC<AnnotationPopupProps> = ({
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 0.5,
+            gap: 1,
           }}
         >
           <Tooltip title="Delete" arrow placement="top">
             <IconButton
-              size="small"
+              size="medium"
               onClick={onDelete}
               sx={{
                 color: "#ef5350",
-                p: "4px",
-                "&:hover": {
-                  bgcolor: "rgba(239,83,80,0.15)",
+                p: "8px",
+                "&:active": {
+                  bgcolor: "rgba(239,83,80,0.25)",
                 },
               }}
             >
-              <DeleteIcon fontSize="small" />
+              <DeleteIcon />
             </IconButton>
           </Tooltip>
         </Box>
